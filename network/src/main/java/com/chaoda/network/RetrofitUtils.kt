@@ -1,6 +1,8 @@
 package com.chaoda.network
 
 import com.chaoda.network.config.INetworkConfig
+import com.chaoda.network.interceptor.CommonRequestInterceptor
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -49,6 +51,10 @@ abstract class RetrofitUtils {
                     )
                 }
             }
+            getInterceptor()?.apply {
+                builder.addInterceptor(this)
+            }
+            builder.addInterceptor(CommonRequestInterceptor(networkConfig))
             mOkHttpClient = builder.build()
         }
         return mOkHttpClient
@@ -56,5 +62,12 @@ abstract class RetrofitUtils {
 
     fun <T> getService(service: Class<T>): T {
         return getRetrofit(getBaseUrl()).create(service)
+    }
+
+    /**
+     * 根据需求在子类中自定义需要的拦截器
+     */
+    open fun getInterceptor(): Interceptor? {
+        return null
     }
 }
