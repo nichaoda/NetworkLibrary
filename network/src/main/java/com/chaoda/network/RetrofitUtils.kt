@@ -1,11 +1,20 @@
 package com.chaoda.network
 
+import com.chaoda.network.config.INetworkConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-abstract class AbsRetrofitUtils {
+abstract class RetrofitUtils {
+
+    companion object {
+        private var networkConfig: INetworkConfig? = null
+
+        fun initConfig(config: INetworkConfig) {
+            networkConfig = config
+        }
+    }
 
     private lateinit var mOkHttpClient: OkHttpClient
 
@@ -30,9 +39,17 @@ abstract class AbsRetrofitUtils {
 
     private fun getOkHttpClient(): OkHttpClient {
         if (!this::mOkHttpClient.isInitialized) {
-            mOkHttpClient = OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .build()
+            val builder = OkHttpClient.Builder()
+            networkConfig?.apply {
+                if (isDebug()) {
+                    builder.addInterceptor(
+                        HttpLoggingInterceptor().setLevel(
+                            HttpLoggingInterceptor.Level.BODY
+                        )
+                    )
+                }
+            }
+            mOkHttpClient = builder.build()
         }
         return mOkHttpClient
     }

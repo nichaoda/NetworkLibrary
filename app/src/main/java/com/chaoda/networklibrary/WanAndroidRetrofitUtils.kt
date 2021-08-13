@@ -1,8 +1,8 @@
 package com.chaoda.networklibrary
 
-import com.chaoda.network.AbsRetrofitUtils
+import com.chaoda.network.RetrofitUtils
 
-object WanAndroidRetrofitUtils : AbsRetrofitUtils() {
+object WanAndroidRetrofitUtils : RetrofitUtils() {
 
     override fun getBaseUrl() = "https://www.wanandroid.com"
 

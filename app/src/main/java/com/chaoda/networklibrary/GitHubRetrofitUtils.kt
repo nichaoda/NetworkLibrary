@@ -1,8 +1,8 @@
 package com.chaoda.networklibrary
 
-import com.chaoda.network.AbsRetrofitUtils
+import com.chaoda.network.RetrofitUtils
 
-object GitHubRetrofitUtils : AbsRetrofitUtils() {
+object GitHubRetrofitUtils : RetrofitUtils() {
 
     override fun getBaseUrl() = "https://api.github.com/"
 
