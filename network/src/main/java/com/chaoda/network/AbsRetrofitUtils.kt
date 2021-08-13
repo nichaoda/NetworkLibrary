@@ -5,20 +5,27 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitUtils {
+abstract class AbsRetrofitUtils {
 
     private lateinit var mOkHttpClient: OkHttpClient
-    private lateinit var mRetrofit: Retrofit
 
-    private fun getRetrofit(): Retrofit {
-        if (!this::mRetrofit.isInitialized) {
-            val builder = Retrofit.Builder()
-            mRetrofit = builder.baseUrl("https://www.wanandroid.com/")
+    /**
+     * 一个应用中可能存在多个不同域名的网络请求,根据域名将对应的Retrofit缓存
+     */
+    private var retrofitHashMap = mutableMapOf<String, Retrofit>()
+
+    abstract fun getBaseUrl(): String
+
+    private fun getRetrofit(url: String): Retrofit {
+        return retrofitHashMap[url] ?: run {
+            val retrofit = Retrofit.Builder().baseUrl(url)
                 .client(getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
+            retrofitHashMap[url] = retrofit
+            retrofit
         }
-        return mRetrofit
+
     }
 
     private fun getOkHttpClient(): OkHttpClient {
@@ -31,6 +38,6 @@ object RetrofitUtils {
     }
 
     fun <T> getService(service: Class<T>): T {
-        return getRetrofit().create(service)
+        return getRetrofit(getBaseUrl()).create(service)
     }
 }
