@@ -1,5 +1,6 @@
 package com.chaoda.network
 
+import android.content.Context
 import com.chaoda.network.config.INetworkConfig
 import com.chaoda.network.interceptor.CommonRequestInterceptor
 import okhttp3.Interceptor
@@ -11,9 +12,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 abstract class RetrofitUtils {
 
     companion object {
+        var applicationContext: Context? = null
         private var networkConfig: INetworkConfig? = null
 
-        fun initConfig(config: INetworkConfig) {
+        fun initConfig(context: Context, config: INetworkConfig? = null) {
+            applicationContext = context
             networkConfig = config
         }
     }
@@ -40,16 +43,16 @@ abstract class RetrofitUtils {
     }
 
     private fun getOkHttpClient(): OkHttpClient {
+        if (applicationContext == null)
+            throw Exception("Please use RetrofitUtils.initConfig at Application first.")
         if (!this::mOkHttpClient.isInitialized) {
             val builder = OkHttpClient.Builder()
-            networkConfig?.apply {
-                if (isDebug()) {
-                    builder.addInterceptor(
-                        HttpLoggingInterceptor().setLevel(
-                            HttpLoggingInterceptor.Level.BODY
-                        )
+            if (networkConfig?.isDebug() == true) {
+                builder.addInterceptor(
+                    HttpLoggingInterceptor().setLevel(
+                        HttpLoggingInterceptor.Level.BODY
                     )
-                }
+                )
             }
             getInterceptor()?.apply {
                 builder.addInterceptor(this)

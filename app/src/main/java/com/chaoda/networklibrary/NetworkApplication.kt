@@ -6,6 +6,6 @@ import com.chaoda.network.RetrofitUtils
 class NetworkApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        RetrofitUtils.initConfig(NetworkConfig())
+        RetrofitUtils.initConfig(this, NetworkConfig())
     }
 }

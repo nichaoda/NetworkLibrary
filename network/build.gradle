@@ -47,4 +47,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.7'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+
+    // https://developer.android.com/guide/topics/ui/settings
+    implementation 'androidx.preference:preference-ktx:1.1.1'
 }

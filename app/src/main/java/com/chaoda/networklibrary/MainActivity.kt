@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import com.chaoda.network.environment.NetworkEnvironmentActivity
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,19 +33,7 @@ class MainActivity : AppCompatActivity() {
                 })
         }
         view.setOnLongClickListener {
-            GitHubRetrofitUtils.getService(IGithubEvents::class.java)
-                .getEvents().enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(
-                        call: Call<ResponseBody>,
-                        response: Response<ResponseBody>
-                    ) {
-                        Log.e("Response:->->->", "onResponse: " + response.body())
-                    }
-
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-
-                    }
-                })
+            NetworkEnvironmentActivity.startEnvironmentActivity(this)
             true
         }
     }

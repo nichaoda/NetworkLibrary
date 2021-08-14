@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--https://developer.android.com/guide/topics/ui/settings/components-and-attributes-->
+    <ListPreference
+        app:defaultValue="1"
+        app:entries="@array/entries"
+        app:entryValues="@array/values"
+        app:icon="@drawable/icon_network_settings"
+        app:key="network_settings"
+        app:summary="选择网络环境(正式环境、测试环境),APP重启后生效"
+        app:title="设置网络环境" />
+</PreferenceScreen>
