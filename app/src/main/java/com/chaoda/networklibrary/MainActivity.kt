@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import com.chaoda.network.environment.NetworkEnvironmentActivity
 import com.chaoda.network.response.*
 import com.chaoda.networklibrary.model.Articles
@@ -15,39 +15,54 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var viewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
         val view = findViewById<TextView>(R.id.text)
         view.setOnClickListener {
-            lifecycleScope.launch {
-                val apiResponse = handleHttp {
-                    WanAndroidRetrofitUtils.getService(IWxArticleChapters::class.java)
-                        .getWxArticleChapters()
+            viewModel.getResponse()
+        }
+        viewModel.liveData.observe(this) { apiResponse ->
+            when (apiResponse) {
+                is SuccessfulApiResponse -> {
+                    Log.e("ApiResponse:->->->", "onSuccess: ${apiResponse.data.toString()}")
                 }
-                when (apiResponse) {
-                    is SuccessfulApiResponse -> {
-                        Log.e("ApiResponse:->->->", "onSuccess: ${apiResponse.data.toString()}")
-                    }
-                    is EmptyApiResponse -> {
-                        Log.e("ApiResponse:->->->", "onEmpty")
-                    }
-                    is FailedApiResponse -> {
-                        Log.e(
-                            "ApiResponse:->->->",
-                            "onFailed: code:${apiResponse.code},msg:${apiResponse.message}"
-                        )
-                    }
-                    is ErrorApiResponse -> {
-                        Log.e("ApiResponse:->->->", "onError: ${apiResponse.throwable.message}")
-                    }
+                is EmptyApiResponse -> {
+                    Log.e("ApiResponse:->->->", "onEmpty")
+                }
+                is FailedApiResponse -> {
+                    Log.e(
+                        "ApiResponse:->->->",
+                        "onFailed: code:${apiResponse.code},msg:${apiResponse.message}"
+                    )
+                }
+                is ErrorApiResponse -> {
+                    Log.e("ApiResponse:->->->", "onError: ${apiResponse.throwable.message}")
                 }
             }
         }
         view.setOnLongClickListener {
             NetworkEnvironmentActivity.startEnvironmentActivity(this)
             true
+        }
+    }
+}
+
+class MainViewModel : ViewModel() {
+
+    val liveData = MutableLiveData<ApiResponse<Articles>>()
+
+    fun getResponse() {
+        viewModelScope.launch {
+            liveData.value = handleHttp {
+                WanAndroidRetrofitUtils.getService(IWxArticleChapters::class.java)
+                    .getWxArticleChapters()
+            }
         }
     }
 }
