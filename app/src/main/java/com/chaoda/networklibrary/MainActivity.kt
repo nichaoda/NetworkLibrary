@@ -4,14 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import com.chaoda.network.environment.NetworkEnvironmentActivity
-import com.chaoda.network.response.ApiResponse
+import com.chaoda.network.response.*
 import com.chaoda.networklibrary.model.Articles
 import com.chaoda.networklibrary.retrofitutils.WanAndroidRetrofitUtils
+import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.http.GET
 
 class MainActivity : AppCompatActivity() {
@@ -21,19 +21,29 @@ class MainActivity : AppCompatActivity() {
 
         val view = findViewById<TextView>(R.id.text)
         view.setOnClickListener {
-            WanAndroidRetrofitUtils.getService(IWxArticleChapters::class.java)
-                .getWxArticleChapters().enqueue(object : Callback<ApiResponse<Articles>> {
-                    override fun onResponse(
-                        call: Call<ApiResponse<Articles>>,
-                        response: Response<ApiResponse<Articles>>
-                    ) {
-                        Log.e("Response:->->->", "onResponse: " + response.body()?.data?.toString())
+            lifecycleScope.launch {
+                val apiResponse = handleHttp {
+                    WanAndroidRetrofitUtils.getService(IWxArticleChapters::class.java)
+                        .getWxArticleChapters()
+                }
+                when (apiResponse) {
+                    is SuccessfulApiResponse -> {
+                        Log.e("ApiResponse:->->->", "onSuccess: ${apiResponse.data.toString()}")
                     }
-
-                    override fun onFailure(call: Call<ApiResponse<Articles>>, t: Throwable) {
-
+                    is EmptyApiResponse -> {
+                        Log.e("ApiResponse:->->->", "onEmpty")
                     }
-                })
+                    is FailedApiResponse -> {
+                        Log.e(
+                            "ApiResponse:->->->",
+                            "onFailed: code:${apiResponse.code},msg:${apiResponse.message}"
+                        )
+                    }
+                    is ErrorApiResponse -> {
+                        Log.e("ApiResponse:->->->", "onError: ${apiResponse.throwable.message}")
+                    }
+                }
+            }
         }
         view.setOnLongClickListener {
             NetworkEnvironmentActivity.startEnvironmentActivity(this)
@@ -44,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
 interface IWxArticleChapters {
     @GET("wxarticle/chapters/json")
-    fun getWxArticleChapters(): Call<ApiResponse<Articles>>
+    suspend fun getWxArticleChapters(): ApiResponse<Articles>
 }
 
 interface IGithubEvents {
