@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import com.chaoda.network.environment.NetworkEnvironmentActivity
+import com.chaoda.networklibrary.retrofitutils.WanAndroidRetrofitUtils
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback

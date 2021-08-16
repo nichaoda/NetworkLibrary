@@ -1,6 +1,7 @@
-package com.chaoda.networklibrary
+package com.chaoda.networklibrary.config
 
 import com.chaoda.network.config.INetworkConfig
+import com.chaoda.networklibrary.BuildConfig
 
 class NetworkConfig : INetworkConfig {
     override fun isDebug(): Boolean {

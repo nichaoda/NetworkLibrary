@@ -1,4 +1,4 @@
-package com.chaoda.networklibrary
+package com.chaoda.networklibrary.retrofitutils
 
 import com.chaoda.network.RetrofitUtils
 
