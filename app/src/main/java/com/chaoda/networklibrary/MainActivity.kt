@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import com.chaoda.network.environment.NetworkEnvironmentActivity
+import com.chaoda.network.response.ApiResponse
+import com.chaoda.networklibrary.model.Articles
 import com.chaoda.networklibrary.retrofitutils.WanAndroidRetrofitUtils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -20,15 +22,15 @@ class MainActivity : AppCompatActivity() {
         val view = findViewById<TextView>(R.id.text)
         view.setOnClickListener {
             WanAndroidRetrofitUtils.getService(IWxArticleChapters::class.java)
-                .getWxArticleChapters().enqueue(object : Callback<ResponseBody> {
+                .getWxArticleChapters().enqueue(object : Callback<ApiResponse<Articles>> {
                     override fun onResponse(
-                        call: Call<ResponseBody>,
-                        response: Response<ResponseBody>
+                        call: Call<ApiResponse<Articles>>,
+                        response: Response<ApiResponse<Articles>>
                     ) {
-                        Log.e("Response:->->->", "onResponse: " + response.body())
+                        Log.e("Response:->->->", "onResponse: " + response.body()?.data?.toString())
                     }
 
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    override fun onFailure(call: Call<ApiResponse<Articles>>, t: Throwable) {
 
                     }
                 })
@@ -42,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
 interface IWxArticleChapters {
     @GET("wxarticle/chapters/json")
-    fun getWxArticleChapters(): Call<ResponseBody>
+    fun getWxArticleChapters(): Call<ApiResponse<Articles>>
 }
 
 interface IGithubEvents {

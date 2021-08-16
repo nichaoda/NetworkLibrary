@@ -1,9 +1,11 @@
 package com.chaoda.network.response
 
+import com.google.gson.annotations.SerializedName
+
 open class ApiResponse<T>(
-    open val code: Int? = null,
+    @SerializedName("errorCode") open val code: Int? = null,
     open val data: T? = null,
-    open val message: String? = null,
+    @SerializedName("errorMsg") open val message: String? = null,
     open val throwable: Throwable? = null
 ) {
     /**
