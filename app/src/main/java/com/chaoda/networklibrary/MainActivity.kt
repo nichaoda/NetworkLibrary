@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.lifecycle.*
 import com.chaoda.network.environment.NetworkEnvironmentActivity
 import com.chaoda.network.response.*
+import com.chaoda.network.support.NetworkLiveData
 import com.chaoda.networklibrary.model.Articles
 import com.chaoda.networklibrary.retrofitutils.WanAndroidRetrofitUtils
 import kotlinx.coroutines.launch
@@ -27,23 +28,13 @@ class MainActivity : AppCompatActivity() {
         view.setOnClickListener {
             viewModel.getResponse()
         }
-        viewModel.liveData.observe(this) { apiResponse ->
-            when (apiResponse) {
-                is SuccessfulApiResponse -> {
-                    Log.e("ApiResponse:->->->", "onSuccess: ${apiResponse.data.toString()}")
-                }
-                is EmptyApiResponse -> {
-                    Log.e("ApiResponse:->->->", "onEmpty")
-                }
-                is FailedApiResponse -> {
-                    Log.e(
-                        "ApiResponse:->->->",
-                        "onFailed: code:${apiResponse.code},msg:${apiResponse.message}"
-                    )
-                }
-                is ErrorApiResponse -> {
-                    Log.e("ApiResponse:->->->", "onError: ${apiResponse.throwable.message}")
-                }
+        viewModel.liveData.observeNetwork(this) {
+            onSuccess {
+                Log.e("Articles->->", it.toString())
+            }
+
+            onComplete {
+
             }
         }
         view.setOnLongClickListener {
@@ -55,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
 class MainViewModel : ViewModel() {
 
-    val liveData = MutableLiveData<ApiResponse<Articles>>()
+    val liveData = NetworkLiveData<Articles>()
 
     fun getResponse() {
         viewModelScope.launch {
