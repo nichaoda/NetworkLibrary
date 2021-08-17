@@ -12,7 +12,7 @@ suspend fun <T> handleHttp(block: suspend () -> ApiResponse<T>): ApiResponse<T> 
     }.onSuccess { apiResponse: ApiResponse<T> ->
         return handleHttpSuccess(apiResponse)
     }.onFailure { throwable: Throwable ->
-        if (BuildConfig.DEBUG) Log.e("handleHttp", "Error:", throwable)
+        if (BuildConfig.DEBUG) Log.e("handleHttp", "Error: ${throwable.message}")
         return ErrorApiResponse(throwable)
     }
     return EmptyApiResponse()
