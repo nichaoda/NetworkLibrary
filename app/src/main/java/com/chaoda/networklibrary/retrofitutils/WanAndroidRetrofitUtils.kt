@@ -5,7 +5,7 @@ import com.chaoda.network.environment.NetworkEnvironmentActivity
 
 object WanAndroidRetrofitUtils : RetrofitUtils() {
 
-    val environment = NetworkEnvironmentActivity.getNetworkEnvironmentFromSP(applicationContext!!)
+    val environment = NetworkEnvironmentActivity.getNetworkEnvironmentFromSP(applicationContext)
 
     val DEBUG = NetworkEnvironmentActivity.DEBUG_ENVIRONMENT
 
