@@ -1,7 +1,6 @@
 package com.chaoda.network
 
 import android.content.Context
-import com.chaoda.network.config.INetworkConfig
 import com.chaoda.network.interceptor.CommonRequestInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -13,11 +12,9 @@ abstract class RetrofitUtils {
 
     companion object {
         var applicationContext: Context? = null
-        private var networkConfig: INetworkConfig? = null
 
-        fun initConfig(context: Context, config: INetworkConfig? = null) {
+        fun initConfig(context: Context) {
             applicationContext = context
-            networkConfig = config
         }
     }
 
@@ -47,17 +44,15 @@ abstract class RetrofitUtils {
             throw Exception("Please use RetrofitUtils.initConfig at Application first.")
         if (!this::mOkHttpClient.isInitialized) {
             val builder = OkHttpClient.Builder()
-            if (networkConfig?.isDebug() == true) {
-                builder.addInterceptor(
-                    HttpLoggingInterceptor().setLevel(
-                        HttpLoggingInterceptor.Level.BODY
-                    )
-                )
+            val loggingInterceptor = HttpLoggingInterceptor()
+            if (BuildConfig.DEBUG) {
+                loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
             }
+            builder.addInterceptor(loggingInterceptor)
             getInterceptor()?.apply {
                 builder.addInterceptor(this)
             }
-            builder.addInterceptor(CommonRequestInterceptor(networkConfig))
+            builder.addInterceptor(CommonRequestInterceptor())
             mOkHttpClient = builder.build()
         }
         return mOkHttpClient
