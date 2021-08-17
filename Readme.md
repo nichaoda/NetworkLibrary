@@ -1,3 +1,5 @@
+## 支持功能
+不同网络环境(正式环境、测试环境)切换、单App中多个域名存在时请求(创建多个RetrofitUtils的子类)
 ## 网络库结构
 ![结构](结构.png)
 1. NetworkApplication：用于获取Application，网络环境切换时需要使用。App的Application需要继承它。
@@ -45,4 +47,3 @@
 	}
 ```
 7. 在Activity或者Fragment中调用
- 
