@@ -1,5 +1,8 @@
 package com.chaoda.network.response
 
+import android.util.Log
+import com.chaoda.network.BuildConfig
+
 /**
  * 处理Http请求
  */
@@ -9,6 +12,7 @@ suspend fun <T> handleHttp(block: suspend () -> ApiResponse<T>): ApiResponse<T> 
     }.onSuccess { apiResponse: ApiResponse<T> ->
         return handleHttpSuccess(apiResponse)
     }.onFailure { throwable: Throwable ->
+        if (BuildConfig.DEBUG) Log.e("handleHttp", "Error:", throwable)
         return ErrorApiResponse(throwable)
     }
     return EmptyApiResponse()
@@ -23,6 +27,11 @@ private fun <T> handleHttpSuccess(apiResponse: ApiResponse<T>): ApiResponse<T> {
         getSuccessfulResult(apiResponse)
     } else {
         // 业务处理没成功
+        if (BuildConfig.DEBUG)
+            Log.e(
+                "handleHttp",
+                "Failed: code:${apiResponse.code}    message:${apiResponse.message}"
+            )
         FailedApiResponse(apiResponse.code, apiResponse.message)
     }
 }
